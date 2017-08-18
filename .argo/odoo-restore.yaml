@@ -1,0 +1,58 @@
+---
+type: workflow
+version: 1
+name: Odoo volume create
+description: Creates a volume called "odoo" and "postgres"
+steps:
+- create_odoo_if_not_exists:
+    template: volume-tools-base
+    arguments:
+      parameters.VOL_NAME: "odoo"
+      parameters.VOL_SIZE: "1"
+      parameters.STORAGE_CLASS: "ssd"
+- create_postgres_if_not_exists:
+    template: volume-tools-base
+    arguments:
+      parameters.VOL_NAME: "postgres"
+      parameters.VOL_SIZE: "10"
+      parameters.STORAGE_CLASS: "ssd"
+
+---
+type: container
+version: 1
+name: Restore Backup
+description: This container restores a backup
+inputs:
+  parameters:
+    DOWNLOAD_URL:
+  volumes:
+    vol-ref:
+      mount_path: /data
+resources:
+  mem_mib: 1024
+  cpu_cores: 0.5
+image: get.applatix.io/ubuntu-wget:latest
+command: ["set -e; wget -P /data %%inputs.parameters.DOWNLOAD_URL%%; cd /data; tar -zxvf *.tar.gz"]
+
+---
+type: workflow
+version: 1
+name: Odoo restore from backup
+description: Restores data from odoo backups
+
+volumes:
+  odoo-vol-ref:
+    name: "odoo"
+  postgres-vol-ref:
+    name: "postgres"
+steps:
+- restore_odoo_snapshot:
+    template: Restore Backup
+    arguments:
+      parameters.DOWNLOAD_URL: "https://s3-us-west-1.amazonaws.com/ax-public/odoo_backups/odoo_backup.tar.gz"
+      volumes.vol-ref: "%%volumes.odoo-vol-ref%%"
+- restore_postgres_snapshot:
+    template: Restore Backup
+    arguments:
+      parameters.DOWNLOAD_URL: "https://s3-us-west-1.amazonaws.com/ax-public/odoo_backups/postgresql_backup.tar.gz"
+      volumes.vol-ref: "%%volumes.postgres-vol-ref%%"

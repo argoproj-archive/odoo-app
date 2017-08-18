@@ -1,0 +1,17 @@
+---
+type: workflow
+version: 1
+name: Odoo e2e restore
+description: Create odoo app from backup
+steps:
+- odoo_volume_create:
+    template: Odoo volume create
+- restore_all_vols:
+    template: Odoo restore from backup
+- deploy_odoo_app:
+    template: odoo-workflow-with-volumes
+    arguments:
+      parameters.APP_NAME: "odoo-with-vols"
+      parameters.DATA_VOL_NAME: "postgres"
+      parameters.APP_VOL_NAME: "odoo"
+
