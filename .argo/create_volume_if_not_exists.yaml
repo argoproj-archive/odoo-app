@@ -22,7 +22,7 @@ description: This is the base template for volume-tools-tests
 resources:
   mem_mib: 64
   cpu_cores: 0.1
-image: argoproj/volume_tools:v1.1
+image: argoproj/volume_tools:1.1
 command: ['volume_tools create --volume-name %%inputs.parameters.VOL_NAME%% --volume-size-gb %%inputs.parameters.VOL_SIZE%% --storage-class %%inputs.parameters.STORAGE_CLASS%%']
 inputs:
   parameters:
