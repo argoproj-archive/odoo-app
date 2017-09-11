@@ -31,7 +31,7 @@ inputs:
 resources:
   mem_mib: 1024
   cpu_cores: 0.5
-image: get.applatix.io/ubuntu-wget:latest
+image: argoproj/ubuntu-wget:latest
 command: ["set -e; wget -P /data %%inputs.parameters.DOWNLOAD_URL%%; cd /data; tar -zxvf *.tar.gz"]
 
 ---
