@@ -21,8 +21,9 @@ spec:
       terminationGracePeriodSeconds: 30
       initContainers:
       - name: odoo-db-init
-        image: busybox
-        command: ['sh', '-c', 'chmod 755 /var/lib/odoo; chmod 755 /mnt/extra-addons;']
+        image: odoo:10.0
+        command: ['/bin/bash', '-c']
+        args: ["chown -R odoo:odoo /var/lib/odoo; chown -R odoo:odoo /mnt/extra-addons"]
         volumeMounts:
         - mountPath: /var/lib/odoo
           name: odoo-web-vol
