@@ -23,6 +23,11 @@ spec:
       - name: odoo-db-init
         image: busybox
         command: ['sh', '-c', 'chmod 755 /var/lib/odoo; chmod 755 /mnt/extra-addons;']
+        volumeMounts:
+        - mountPath: /var/lib/odoo
+          name: odoo-web-vol
+        - mountPath: /mnt/extra-addons
+          name: odoo-addons-vol
       containers:
       - name: odoo
         image: odoo:10.0
