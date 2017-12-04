@@ -19,6 +19,10 @@ spec:
         app: odoo-db
     spec:
       terminationGracePeriodSeconds: 30
+      initContainers:
+      - name: odoo-db-init
+        image: busybox
+        command: ['sh', '-c', 'mkdir -p /var/lib/postgresql/data/pgdata/odoo']
       containers:
       - name: odoo-db
         image: postgres:9.4
@@ -28,7 +32,7 @@ spec:
         - name: POSTRES_USER
           value: odoo
         - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
+          value: /var/lib/postgresql/data/pgdata/odoo
         ports:
         - name: postgress
           containerPort: 5432
