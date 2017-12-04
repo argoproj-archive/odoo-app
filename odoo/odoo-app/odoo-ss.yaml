@@ -19,11 +19,11 @@ spec:
         app: odoo
     spec:
       terminationGracePeriodSeconds: 30
-      containers:
       initContainers:
       - name: odoo-db-init
         image: busybox
         command: ['sh', '-c', 'chmod 755 /var/lib/odoo; chmod 755 /mnt/extra-addons;']
+      containers:
       - name: odoo
         image: odoo:10.0
         env:
