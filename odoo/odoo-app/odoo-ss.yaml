@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: odoo
+  labels:
+    name: odoo
+  namespace: odoo
+spec:
+  selector:
+    matchLabels:
+      app: odoo
+  serviceName: odoo
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: odoo
+        app: odoo
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: odoo
+        image: odoo:10.0
+        env:
+        - name: HOST
+          value: odoo-db
+        - name: USER
+          value: odoo
+        - name: PASSWORD
+          value: odoo
+        ports:
+        - name: odoo
+          containerPort: 8069
+        volumeMounts:
+        - mountPath: /var/lib/odoo
+          name: odoo-web-vol
+        - mountPath: /mnt/extra-addons
+          name: odoo-addons-vol
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+  volumeClaimTemplates:
+  - metadata:
+      name: odoo-web-vol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  - metadata:
+      name: odoo-addons-vol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources: 
+        requests:
+          storage: 1Gi
