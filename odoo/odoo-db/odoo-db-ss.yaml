@@ -29,7 +29,7 @@ spec:
         env:
         - name: POSTGRES_PASSWORD
           value: odoo
-        - name: POSTRES_USER
+        - name: POSTGRES_USER
           value: odoo
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata/odoo
