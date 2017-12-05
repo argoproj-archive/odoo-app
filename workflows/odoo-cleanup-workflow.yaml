@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: odoo-cleanup-workflow-
+spec:
+  entrypoint: odoo-cleanup
+
+  templates:
+  - name: odoo-cleanup
+    steps:
+    - - name: odoo-cleanup
+        template: kubectl-delete
+        arguments:
+          parameters:
+          - name: repo-manifest-dir
+            value: "odoo/odoo-app"
+
+    - - name: odoo-db-cleanup
+        template: kubectl-delete
+        arguments:
+          parameters:
+          - name: repo-manifest-dir
+            value: "odoo/odoo-db"
+        
+  - name: kubectl-delete
+    inputs:
+      parameters:
+      - name: repo-manifest-dir
+      artifacts:
+      - name: git-artifact
+        path: /src
+        git:
+          repo: "https://github.com/argoproj/odoo-app.git"
+          revision: "master"
+    container:
+      image: docker.io/argoproj/kubectl:sh-v1.8.3
+      command: ["/bin/sh", "-c"]
+      args: ["kubectl delete -f /src/{{inputs.parameters.repo-manifest-dir}}; exit 0"]
+      imagePullPolicy: Always

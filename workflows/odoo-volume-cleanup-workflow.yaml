@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: odoo-volume-cleanup-workflow-
+spec:
+  entrypoint: odoo-volume-cleanup
+
+  templates:
+  - name: odoo-volume-cleanup
+    steps:
+    - - name: odoo-ns-delete  
+        template: kubectl-ns-delete
+        arguments:   
+          parameters:
+          - name: ns-to-delete
+            value: odoo   
+
+  - name: kubectl-ns-delete
+    inputs:
+      parameters:
+      - name: ns-to-delete
+    container:
+      image: docker.io/argoproj/kubectl:sh-v1.8.3
+      command: ["/bin/sh", "-c"]
+      args: ["kubectl get namespace {{inputs.parameters.ns-to-delete}}; RET=$?; if [ ${RET} -eq 0 ]; then kubectl delete namespace {{inputs.parameters.ns-to-delete}}; fi;"]
+      imagePullPolicy: Always
